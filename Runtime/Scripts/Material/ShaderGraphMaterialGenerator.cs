@@ -85,7 +85,7 @@ namespace GLTFast.Materials {
         /// <summary>Name of the shader graph used for PBR metallic/roughness materials</summary>
         public const string MetallicShader = "glTF-pbrMetallicRoughness";
         /// <summary>Name of the shader graph used for unlit materials</summary>
-        public const string UnlitShader = "glTF-unlit";
+        public const string UnlitShader = "3dTilesShader";
         /// <summary>Name of the shader graph used for PBR specular/glossiness materials</summary>
         public const string SpecularShader = "glTF-pbrSpecularGlossiness";
 
@@ -498,8 +498,13 @@ namespace GLTFast.Materials {
             var shaderPath = $"{k_ShaderPathPrefix}{shaderName}.shadergraph";
             Debug.Log(shaderPath);
             var shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
-            if (shader == null) {
-                Logger?.Error($"Cannot load shader at path {shaderPath}");
+            if (shader == null) 
+            {
+                shaderPath = $"{k_ShaderPathPrefix}{shaderName}.shader";
+                shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
+                if (shader == null) {
+                    Logger?.Error($"Cannot load shader at path {shaderPath}");
+                }            
             }
             return shader;
 #else
