@@ -85,7 +85,7 @@ namespace GLTFast.Materials {
         /// <summary>Name of the shader graph used for PBR metallic/roughness materials</summary>
         public const string MetallicShader = "glTF-pbrMetallicRoughness";
         /// <summary>Name of the shader graph used for unlit materials</summary>
-        public const string UnlitShader = "3dTilesShader";
+        public const string UnlitShader = "Tiles3D";
         /// <summary>Name of the shader graph used for PBR specular/glossiness materials</summary>
         public const string SpecularShader = "glTF-pbrSpecularGlossiness";
 
@@ -108,6 +108,7 @@ namespace GLTFast.Materials {
 #endif
 #else
         const string k_ShaderGraphsPrefix = "Shader Graphs/";
+        const string k_ShaderPrefix = "Custom/";
 #endif
 
         const string k_OcclusionKeyword = "_OCCLUSION";
@@ -498,17 +499,22 @@ namespace GLTFast.Materials {
             var shaderPath = $"{k_ShaderPathPrefix}{shaderName}.shadergraph";
             Debug.Log(shaderPath);
             var shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
-            if (shader == null) 
+            if (shader == null)
             {
                 shaderPath = $"{k_ShaderPathPrefix}{shaderName}.shader";
                 shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
-                if (shader == null) {
+                if (shader == null)
+                {
                     Logger?.Error($"Cannot load shader at path {shaderPath}");
-                }            
+                }
             }
             return shader;
 #else
-            return FindShader($"{k_ShaderGraphsPrefix}{shaderName}", Logger);
+            var shaderPath = $"{k_ShaderPrefix}{shaderName}.shader";
+            Shader shader = Shader.Find(shaderPath);
+            if(shader == null)
+                shader = FindShader($"{k_ShaderGraphsPrefix}{shaderName}", Logger);
+            return shader;
 #endif
         }
 
