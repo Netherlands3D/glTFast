@@ -510,10 +510,19 @@ namespace GLTFast.Materials {
             }
             return shader;
 #else
-            var shaderPath = $"{k_ShaderPrefix}{shaderName}";
-            Shader shader = shader = FindShader(shaderPath, Logger);
+            //try find shader graph variant
+            var shaderPath = $"{k_ShaderGraphsPrefix}{shaderName}";
+            Shader shader = Shader.Find(shaderPath);   
             if(shader == null)
-                shader = FindShader($"{k_ShaderGraphsPrefix}{shaderName}", Logger);
+            {             
+                //try find custom variant
+                shaderPath = $"{k_ShaderPrefix}{shaderName}";
+                shader = Shader.Find(shaderPath);        
+                if(shader == null)
+                {
+                    Logger?.Error(LogCode.ShaderMissing, shaderPath);
+                }
+            }
             return shader;
 #endif
         }
