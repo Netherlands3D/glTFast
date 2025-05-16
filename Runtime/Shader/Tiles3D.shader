@@ -85,13 +85,6 @@
                 Light mainLight = GetMainLight(i.shadowCoord); //get dir light
                 float3 lightCol = Lambert(mainLight.color * mainLight.shadowAttenuation, mainLight.direction, float3(0,1,0)); //lets keep up normal always
 
-                // uint lightsCount = GetAdditionalLightsCount();
-                // for (int j = 0; j < lightsCount; j++)
-                // {
-                //     Light light = GetAdditionalLight(j, i.worldPos);
-                //     lightCol += Lambert(light.color * (light.distanceAttenuation * light.shadowAttenuation), light.direction, i.normal);
-                // }
-
                 color.rgb *= lightCol + 1;
                 return color;
             }
