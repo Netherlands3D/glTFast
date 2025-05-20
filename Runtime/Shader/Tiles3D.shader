@@ -4,6 +4,7 @@
     {
         _Color ("Color", Color) = (1,1,1,1)
         baseColorTexture ("Base Color Texture", 2D) = "white" {}
+        _ShadowStrength ("Shadow Strength", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -56,6 +57,7 @@
 
             sampler2D baseColorTexture;
             float4 _Color;
+            float _ShadowStrength;
 
             v2f vert (appdata v)
             {
@@ -81,11 +83,12 @@
             {
                 float4 texColor = tex2D(baseColorTexture, i.uv);
                 float4 color = texColor * _Color;
-                               
                 Light mainLight = GetMainLight(i.shadowCoord); //get dir light
-                float3 lightCol = Lambert(mainLight.color * mainLight.shadowAttenuation, mainLight.direction, float3(0,1,0)); //lets keep up normal always
+                float shadowAtten = lerp(1.0, mainLight.shadowAttenuation, _ShadowStrength);
+                float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, float3(0,1,0));                
+                //color.rgb *= lightCol + 1;
+                color.rgb *= lerp(0, lightCol + 1, shadowAtten);
 
-                color.rgb *= lightCol + 1;
                 return color;
             }
             ENDHLSL
@@ -119,6 +122,8 @@
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
+            float _ShadowStrength;
+
             Varyings vert(Attributes input)
             {
                 Varyings output;
@@ -128,7 +133,7 @@
                 float3 worldPos = TransformObjectToWorld(input.vertex.xyz);
                 float3 worldNormal = TransformObjectToWorldNormal(input.normal);
                                 
-                worldPos += worldNormal * 0.001; //prevent zfighting spots
+                worldPos += worldNormal * (0.001 * _ShadowStrength); //prevent zfighting spots
 
                 output.positionCS = TransformWorldToHClip(worldPos);
                 return output;
