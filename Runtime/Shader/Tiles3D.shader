@@ -44,6 +44,7 @@
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
+                //float4 positionWS : TEXCOORD2;
             };
 
             struct v2f
@@ -68,7 +69,12 @@
                 o.uv = v.uv;
                
                 VertexPositionInputs posInputs = GetVertexPositionInputs(v.vertex.xyz);
-                o.shadowCoord = TransformWorldToShadowCoord(o.worldPos);
+                //o.shadowCoord = TransformWorldToShadowCoord(o.worldPos);
+
+
+                #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                    o.shadowCoord = TransformWorldToShadowCoord(o.worldPos);
+                #endif
 
                 return o;
             }
@@ -81,14 +87,19 @@
 
             float4 frag (v2f i) : SV_Target
             {
+                 #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+                   i.shadowCoord = TransformWorldToShadowCoord(i.worldPos);
+                 #endif
+
                 float4 texColor = tex2D(baseColorTexture, i.uv);
                 float4 color = texColor * _Color;
                 Light mainLight = GetMainLight(i.shadowCoord); //get dir light
+
+
                 float shadowAtten = lerp(1.0, mainLight.shadowAttenuation, _ShadowStrength);
                 float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, float3(0,1,0));                
                 //color.rgb *= lightCol + 1;
                 color.rgb *= lerp(0, lightCol + 1, shadowAtten);
-
                 return color;
             }
             ENDHLSL
