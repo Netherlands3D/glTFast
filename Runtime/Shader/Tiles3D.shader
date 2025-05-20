@@ -90,5 +90,45 @@
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShadowCasterPass.hlsl"
+
+            struct Attributes
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+            };
+
+            Varyings vert(Attributes input)
+            {
+                Varyings output;
+                float3 positionWS = TransformObjectToWorld(input.vertex.xyz);
+                float3 normalWS = TransformObjectToWorldNormal(input.normal);
+                output.positionCS = GetShadowCasterPositionCS(input.vertex, normalWS);
+                return output;
+            }
+
+            float4 frag(Varyings input) : SV_Target
+            {
+                return 0;
+            }
+            ENDHLSL
+        }
     }
 }
