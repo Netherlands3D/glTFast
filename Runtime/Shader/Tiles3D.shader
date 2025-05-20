@@ -95,38 +95,48 @@
             Name "ShadowCaster"
             Tags { "LightMode" = "ShadowCaster" }
 
+            Cull Back
+            ZWrite On
+            ZTest LEqual
+
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShadowCasterPass.hlsl"
 
             struct Attributes
             {
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                float3 positionWS = TransformObjectToWorld(input.vertex.xyz);
-                float3 normalWS = TransformObjectToWorldNormal(input.normal);
-                output.positionCS = GetShadowCasterPositionCS(input.vertex, normalWS);
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+                float3 worldPos = TransformObjectToWorld(input.vertex.xyz);
+                float3 worldNormal = TransformObjectToWorldNormal(input.normal);
+                                
+                worldPos += worldNormal * 0.001; //prevent zfighting spots
+
+                output.positionCS = TransformWorldToHClip(worldPos);
                 return output;
             }
 
             float4 frag(Varyings input) : SV_Target
             {
-                return 0;
+                return 0.0;
             }
             ENDHLSL
         }
