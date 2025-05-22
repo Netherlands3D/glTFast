@@ -13,10 +13,13 @@
             "IgnoreProjector" = "True" 
             "Queue" = "Geometry" 
             "RenderType" = "Opaque"
+            //"UniversalMaterialType" = "Lit"
         }
-        LOD 100
-        Blend SrcAlpha OneMinusSrcAlpha
+        //LOD 300
+       // Blend SrcAlpha OneMinusSrcAlpha
 
+
+        
         Pass
         {
             Name "ForwardLit"
@@ -97,7 +100,7 @@
 
 
                 float shadowAtten = lerp(1.0, mainLight.shadowAttenuation, _ShadowStrength);
-                float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, float3(0,1,0));                
+                float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, normalize(i.normal));                
                 //color.rgb *= lightCol + 1;
                 color.rgb *= lerp(0, lightCol + 1, shadowAtten);
                 return color;
@@ -156,5 +159,22 @@
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "DepthNormals"
+            Tags
+            {
+                "LightMode" = "DepthNormals"
+            }
+
+            HLSLPROGRAM
+            //#pragma target 2.0           
+            #pragma vertex DepthNormalsVertex
+            #pragma fragment DepthNormalsFragment
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
+            ENDHLSL
+        }
+        
     }
 }
