@@ -168,7 +168,7 @@
             }
 
             HLSLPROGRAM
-            //#pragma target 2.0           
+            #pragma target 2.0           
             #pragma vertex DepthNormalsVertex
             #pragma fragment DepthNormalsFragment
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
