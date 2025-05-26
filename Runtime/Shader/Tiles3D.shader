@@ -12,13 +12,9 @@
             "RenderPipeline" = "UniversalPipeline" 
             "IgnoreProjector" = "True" 
             "Queue" = "Geometry" 
-            "RenderType" = "Opaque"
-            //"UniversalMaterialType" = "Lit"
+            "RenderType" = "Opaque"           
         }
-        //LOD 300
-       // Blend SrcAlpha OneMinusSrcAlpha
-
-
+        //no blending
         
         Pass
         {
@@ -47,7 +43,6 @@
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
-                //float4 positionWS : TEXCOORD2;
             };
 
             struct v2f
@@ -71,9 +66,7 @@
                 o.normal = TransformObjectToWorldNormal(v.normal);
                 o.uv = v.uv;
                
-                VertexPositionInputs posInputs = GetVertexPositionInputs(v.vertex.xyz);
-                //o.shadowCoord = TransformWorldToShadowCoord(o.worldPos);
-
+                VertexPositionInputs posInputs = GetVertexPositionInputs(v.vertex.xyz); 
 
                 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
                     o.shadowCoord = TransformWorldToShadowCoord(o.worldPos);
@@ -100,8 +93,7 @@
 
 
                 float shadowAtten = lerp(1.0, mainLight.shadowAttenuation, _ShadowStrength);
-                float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, normalize(i.normal));                
-                //color.rgb *= lightCol + 1;
+                float3 lightCol = Lambert(mainLight.color * shadowAtten, mainLight.direction, normalize(i.normal)); 
                 color.rgb *= lerp(0, lightCol + 1, shadowAtten);
                 return color;
             }
