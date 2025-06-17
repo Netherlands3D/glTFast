@@ -1,5 +1,7 @@
 # glTFast for Unity
 
+> **DEPRECATED - This repository is now deprecated due to the 3D tiles package migration to Unity's GLTFast package 2025-06-17**
+
 > **This is a fork for Netherlands3D because of issues with too many Shader Variants in combination with WebGL. Unless working in the context of Netherlands3D it is not recommended to use this library.**
 
 <p align="center">
